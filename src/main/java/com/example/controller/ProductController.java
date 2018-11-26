@@ -54,13 +54,13 @@ public class ProductController {
         return ResponseEntity.ok().body("Product added");
     }
     @PostMapping("/add/inventory")
-    public ResponseEntity addProduct(@RequestBody Inventory inventory){
-        Inventory existing = inventoryRepo.findByCode(inventory.getCode());
+    public ResponseEntity addProduct(@RequestBody Product product){
+        Product existing = productRepo.findByCode(product.getCode());
         if(existing!= null){
             return ResponseEntity.status(409).body("The Product already exist.");
         }
 
-        inventoryRepo.save(inventory);
+        productRepo.save(product);
 
         return ResponseEntity.ok().body("Product added");
     }
