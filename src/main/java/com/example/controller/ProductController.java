@@ -42,7 +42,7 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity addProduct(@RequestBody Product product, @RequestBody int quantity){
+    public ResponseEntity addProductWithQuantity(@RequestBody Product product, @RequestBody int quantity){
         Product existing = productRepo.findByCode(product.getCode());
         if(existing!= null){
             return ResponseEntity.status(409).body("The Product already exist.");
@@ -53,7 +53,17 @@ public class ProductController {
 
         return ResponseEntity.ok().body("Product added");
     }
+    @PostMapping("/add/inventory")
+    public ResponseEntity addProduct(@RequestBody Inventory inventory){
+        Inventory existing = inventoryRepo.findByCode(inventory.getCode());
+        if(existing!= null){
+            return ResponseEntity.status(409).body("The Product already exist.");
+        }
 
+        inventoryRepo.save(inventory);
+
+        return ResponseEntity.ok().body("Product added");
+    }
     @PutMapping("/update/decrease")
     public ResponseEntity decreaseProductStock(@RequestParam("code") String code, @RequestParam("quantity") int quantity){
         Product p = productRepo.findByCode(code);
