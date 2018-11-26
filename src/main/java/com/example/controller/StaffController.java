@@ -35,4 +35,14 @@ public class StaffController {
         }
         return ResponseEntity.ok().body(staff);
     }
+
+    @GetMapping("/add/{name}")
+    public ResponseEntity addStaff(@PathVariable String name){
+        Staff staff = staffRepo.findByName(name);
+        if(staff!= null){
+            return ResponseEntity.status(400).body("Staff already exist !");
+        }
+        staffRepo.save(new Staff(name));
+        return ResponseEntity.ok().body(staff);
+    }
 }
