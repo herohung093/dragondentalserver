@@ -17,7 +17,7 @@ public class CustomerController {
     @Autowired
     CustomerRepo customerRepo;
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity addCustomer(@RequestBody Customer customer){
         Customer existing = customerRepo.findByName(customer.getName());
         if(existing!= null){
@@ -27,7 +27,7 @@ public class CustomerController {
         return ResponseEntity.ok().body("Customer has been added");
     }
 
-    @GetMapping("/get/{name}")
+    @GetMapping("/{name}")
     public ResponseEntity getByName(@PathVariable String name){
         Customer customer = customerRepo.findByName(name);
         if(customer== null){
@@ -35,7 +35,7 @@ public class CustomerController {
         }
         return ResponseEntity.ok().body(customer);
     }
-    @GetMapping("/get")
+    @GetMapping("/")
     public ResponseEntity getAll(){
         List<Customer> customers = customerRepo.findAll();
         if(customers== null){

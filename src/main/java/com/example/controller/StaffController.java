@@ -33,7 +33,7 @@ public class StaffController {
         return ResponseEntity.ok().body(staff);
     }
 
-    @GetMapping("/add/{name}")
+    @PostMapping("/{name}")
     public ResponseEntity addStaff(@PathVariable String name){
         Staff staff = staffRepo.findByName(name);
         if(staff!= null){
@@ -43,7 +43,7 @@ public class StaffController {
         return ResponseEntity.ok().body(staff);
     }
 
-    @PostMapping("/add/")
+    @PostMapping("/")
     public ResponseEntity addStaff(@RequestBody Staff staff){
         Staff exist = staffRepo.findByName(staff.getName());
         if(staff!= null){

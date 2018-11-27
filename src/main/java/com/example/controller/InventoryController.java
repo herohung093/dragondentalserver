@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class InventoryController {
     @Autowired
     private InventoryRepo inventoryRepo;
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity getAll(){
 
         return ResponseEntity.ok().body(inventoryRepo.findAll());

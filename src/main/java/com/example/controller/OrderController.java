@@ -51,14 +51,19 @@ public class OrderController {
         return ResponseEntity.ok().body(p);
 
     }
-    @GetMapping("/get/all/date/{localDate}")
-    public ResponseEntity getOrderByDate(@PathVariable LocalDate localDate){
+    @GetMapping("/date")
+    public ResponseEntity getOrderByDate(@RequestBody LocalDate localDate){
 
         return ResponseEntity.ok().body(orderRepo.findAllByCreateAtAfter(localDate));
 
     }
+    /*@GetMapping("/date/{localDate}")
+    public ResponseEntity getOrderByDate(@PathVariable LocalDate localDate){
 
-    @PostMapping("/add")
+        return ResponseEntity.ok().body(orderRepo.findAllByCreateAtAfter(localDate));
+
+    }*/
+    @PostMapping("/")
     public ResponseEntity createOrder(@RequestBody Order order, @RequestBody List<OrderLine> orderLines){
         if(order == null || orderLines == null){
             return ResponseEntity.status(400).body("Order or OrderLines is null. Bad request");

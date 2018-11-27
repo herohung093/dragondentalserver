@@ -24,7 +24,7 @@ public class ProductController {
     StaffRepo staffRepo;
     @Autowired
     InventoryRepo inventoryRepo;
-    @GetMapping("/get")
+    @GetMapping("/")
     public ResponseEntity getAll(){
         List<Product> products = productRepo.findAll();
         if(products== null){
@@ -32,7 +32,7 @@ public class ProductController {
         }
         return ResponseEntity.ok().body(products);
     }
-    @GetMapping("/get/{code}")
+    @GetMapping("/{code}")
     public ResponseEntity getProductByCode(@PathVariable String code){
         Product p = productRepo.findByCode(code);
         if(p== null){
@@ -41,30 +41,43 @@ public class ProductController {
         return ResponseEntity.ok().body(p);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity addProductWithQuantity(@RequestBody Product product, @RequestBody int quantity){
         Product existing = productRepo.findByCode(product.getCode());
+        System.out.println(product.toString());
         if(existing!= null){
             return ResponseEntity.status(409).body("The Product already exist.");
         }
+
+        Inventory inventory = inventoryRepo.findByCode(product.getCode());
+
+        if(inventory!= null){
+
+            inventory.setStock(quantity);
+            inventoryRepo.save(inventory);
+            return ResponseEntity.status(409).body("The Product already exist.");
+        }
+        inventory = new Inventory(product.getCode(),quantity);
         //add product into 2 tables
-        inventoryRepo.save(new Inventory(product.getCode(),quantity));
+        System.out.println(inventory.toString());
+        inventoryRepo.save(inventory);
         productRepo.save(product);
 
         return ResponseEntity.ok().body("Product added");
     }
     @PostMapping("/add/inventory")
     public ResponseEntity addProduct(@RequestBody Product product){
+        System.out.println(product.toString());
         Product existing = productRepo.findByCode(product.getCode());
         if(existing!= null){
             return ResponseEntity.status(409).body("The Product already exist.");
         }
-
-        productRepo.save(product);
+    Product newProduct = new Product(product.getCode());
+        productRepo.save(newProduct);
 
         return ResponseEntity.ok().body("Product added");
     }
-    @PutMapping("/update/decrease")
+    @PutMapping("/decrease")
     public ResponseEntity decreaseProductStock(@RequestParam("code") String code, @RequestParam("quantity") int quantity){
         Product p = productRepo.findByCode(code);
         if(p== null){
@@ -74,8 +87,8 @@ public class ProductController {
         return ResponseEntity.ok().body("Product quantity has changed");
     }
 
-    @PutMapping("/update")
-    public ResponseEntity updateProductStock(@RequestParam("code") String code, @RequestParam("quantity") int quantity){
+    @PutMapping("/{code}/{quantity}")
+    public ResponseEntity updateProductStock(@PathVariable("code") String code, @PathVariable("quantity") int quantity){
         Product p = productRepo.findByCode(code);
         if(p== null){
             return ResponseEntity.status(404).body("Product not found !");

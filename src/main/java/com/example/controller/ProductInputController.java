@@ -34,7 +34,7 @@ public class ProductInputController {
         System.out.println("A: "+a.toString());
     }*/
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity increaseStock(@RequestBody ProductInput productInput){
         Product existing = productRepo.findByCode(productInput.getProduct().getCode());
         Staff staff = staffRepo.findByName(productInput.getOperator().getName());
