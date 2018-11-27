@@ -5,10 +5,7 @@ import com.example.model.Staff;
 import com.example.repository.StaffRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,6 +40,16 @@ public class StaffController {
             return ResponseEntity.status(400).body("Staff already exist !");
         }
         staffRepo.save(new Staff(name));
+        return ResponseEntity.ok().body(staff);
+    }
+
+    @PostMapping("/add/")
+    public ResponseEntity addStaff(@RequestBody Staff staff){
+        Staff exist = staffRepo.findByName(staff.getName());
+        if(staff!= null){
+            return ResponseEntity.status(400).body("Staff already exist !");
+        }
+        staffRepo.save(staff);
         return ResponseEntity.ok().body(staff);
     }
 }
