@@ -6,5 +6,5 @@ public class Constants {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String SECRET = "SecretKeyToGenJWTsDragon";
-    public static final String LOGIN_URL = "/users/sign-up";
+    public static final String LOGIN_URL = "/";
 }

@@ -106,16 +106,9 @@ public class OrderController {
         for(OrderLine orderLine: orderLines){
             inventoryRepo.increaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
         }
+        orderRepo.deleteOrderLines(id);
         orderRepo.deleteById(id);
         return ResponseEntity.ok().body("Order: "+id+" deleted");
-    }
-    private void deleteOrderInternal( Long id){
-        Order oldOrder = orderRepo.getById(id);
-        List<OrderLine> orderLines = oldOrder.getOrderLines();
-        for(OrderLine orderLine: orderLines){
-            inventoryRepo.increaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
-        }
-        orderRepo.deleteById(id);
     }
 
     @PutMapping("/")

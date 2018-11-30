@@ -42,9 +42,18 @@ public class CustomerController {
     public ResponseEntity getAll(){
         List<Customer> customers = customerRepo.findAll();
         if(customers== null){
-            return ResponseEntity.status(404).body("Product not found !");
+            return ResponseEntity.status(404).body("there is none customer in database !");
         }
         return ResponseEntity.ok().body(customers);
+    }
+
+    @PutMapping("/")
+    public ResponseEntity updateCustomer(@RequestBody Customer customer){
+        Customer exist = customerRepo.findByName(customer.getName());
+        if(exist == null)
+            return ResponseEntity.badRequest().body("Customer name does not exist");
+        customerRepo.updateCustomer(customer.getName(),customer.getAddress(),customer.getNote(),customer.getContactPerson(),customer.getPhone());
+        return ResponseEntity.ok().body("Customer updated");
     }
     @GetMapping("/import")
     public ResponseEntity importData(){
