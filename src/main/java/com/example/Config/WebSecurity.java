@@ -21,13 +21,16 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
+       /* http.csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
                 .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()));
+                */
+        http.authorizeRequests()
+                .antMatchers("/").permitAll();
     }
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
