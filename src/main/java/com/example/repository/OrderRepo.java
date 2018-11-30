@@ -2,6 +2,8 @@ package com.example.repository;
 
 
 import com.example.model.Customer;
+import com.example.model.Interface.BestSeller;
+import com.example.model.Interface.TopCustomer;
 import com.example.model.Order;
 import com.example.model.OrderLine;
 import com.example.model.Staff;
@@ -44,4 +46,21 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     //get orders from startDate to endDate
     @Query("select o from Order o where o.createAt between :startDate and :endDate")
     List<Order> getAllByDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+
+
+    @Query(nativeQuery = true, value = "SELECT c.name AS customerName, SUM(o.paid) AS totalPaid FROM order_ o," +
+            " customer c where o.customer = c.id and o.create_at between :startDate and :endDate group by c.name order by totalPaid DESC")
+    List<TopCustomer> getTopCustomer(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(nativeQuery = true, value = "SELECT o.product_code AS productCode, SUM(o.quantity) AS totalSold FROM order_line o" +
+            " group by o.product_code order by totalSold DESC LIMIT 30" )
+    List<BestSeller> getBestSeller();
+
+    @Query(nativeQuery = true, value = "SELECT  * from order_ o where o.paid = 0")
+    List<Order> getUnpaidOrder();
+
+    @Query(nativeQuery = true, value = "delete from order_line o where o.order_id = :id")
+    void deleteOrderLines(@Param("id") Long id);
+
 }

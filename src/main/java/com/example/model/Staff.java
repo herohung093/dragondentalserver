@@ -9,7 +9,6 @@ public class Staff {
     String name;
     String mobilePhone;
     String address;
-    String password;
     public Staff() {
     }
 
@@ -17,14 +16,6 @@ public class Staff {
         this.name = name;
         this.mobilePhone = mobilePhone;
         this.address = address;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Staff(String name) {

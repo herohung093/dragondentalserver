@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.model.*;
 import com.example.repository.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class OrderController {
     private CustomerRepo customerRepo;
     @Autowired
     private InventoryRepo inventoryRepo;
+
     @GetMapping("/")
     public ResponseEntity getAll(){
 
@@ -42,6 +44,12 @@ public class OrderController {
         return ResponseEntity.ok().body(orderRepo.getALlInstalment());
 
     }
+    @GetMapping("/{id}")
+    public ResponseEntity getById(@PathVariable Long id){
+
+        return ResponseEntity.ok().body(orderRepo.getById(id));
+
+    }
     @GetMapping("/{id}/items")
     public ResponseEntity getOrderItems(@PathVariable Long id){
         List<OrderLine> p = orderRepo.getOrderItemsById(Long.valueOf(id));
@@ -52,19 +60,23 @@ public class OrderController {
 
     }
     @GetMapping("/date")
-    public ResponseEntity getOrderByDate(@RequestBody LocalDate localDate){
+    public ResponseEntity getOrderByDate(@RequestParam("date") String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate localDate = LocalDate.parse(date, formatter);
 
         return ResponseEntity.ok().body(orderRepo.findAllByCreateAtAfter(localDate));
+    }
+    @GetMapping("/date/between")
+    public ResponseEntity getOrderBetween(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+        return ResponseEntity.ok().body(orderRepo.getAllByDate(start,end));
 
     }
-    /*@GetMapping("/date/{localDate}")
-    public ResponseEntity getOrderByDate(@PathVariable LocalDate localDate){
-
-        return ResponseEntity.ok().body(orderRepo.findAllByCreateAtAfter(localDate));
-
-    }*/
     @PostMapping("/")
-    public ResponseEntity createOrder(@RequestBody Order order, @RequestBody List<OrderLine> orderLines){
+    public ResponseEntity createOrder(@RequestBody Order order){
+        List<OrderLine> orderLines = order.getOrderLines();
         if(order == null || orderLines == null){
             return ResponseEntity.status(400).body("Order or OrderLines is null. Bad request");
         }
@@ -72,48 +84,94 @@ public class OrderController {
         //Order order = new Order();
         for(OrderLine orderLine: orderLines){
             orderLine.setOrder(order);
-            order.getOrderLines().add(orderLine);
-            if(orderLine.getQuantity()> inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock()){
+            //order.getOrderLines().add(orderLine);
+            int quantity = inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock();
+            if(orderLine.getQuantity()> quantity){
                 return ResponseEntity.status(400).body("Not enough stock in store for product: "+ orderLine.getProduct().getCode()+"/n"
-                    +"Stock in store: "+inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock()+"/n"
+                    +"Stock in store: "+quantity+"/n"
                     +"Request: "+orderLine.getQuantity());
             }
             inventoryRepo.decreaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
         }
         orderRepo.save(order);
-        return ResponseEntity.ok().body(order);
+        return ResponseEntity.ok().body("Order has been update");
     }
 
-
-/*
-//example of how to save an order
-    @GetMapping("/example")
-    public void addSample(){
-
-        Staff staff = staffRepo.findByName("Hoang");
-        Customer customer = customerRepo.findById(4);
-        Order order = new Order(customer,staff);
-        List<OrderLine> orderLines = new ArrayList<>();
-        orderLines.add(new OrderLine("NEW-CX",5,33000));
-
-
-        addOrder(order,orderLines);
-
-    }
-    //testing
-    public void addOrder(@RequestBody Order order, @RequestBody List<OrderLine> orderLines){
-
-        //Order order = new Order();
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteOrder(@PathVariable Long id){
+        Order oldOrder = orderRepo.getById(id);
+        if(oldOrder == null)
+            return ResponseEntity.status(404).body("Order Id not found");
+        List<OrderLine> orderLines = oldOrder.getOrderLines();
         for(OrderLine orderLine: orderLines){
-            orderLine.setOrder(order);
-            order.getOrderLines().add(orderLine);
+            inventoryRepo.increaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
+        }
+        orderRepo.deleteById(id);
+        return ResponseEntity.ok().body("Order: "+id+" deleted");
+    }
+    private void deleteOrderInternal( Long id){
+        Order oldOrder = orderRepo.getById(id);
+        List<OrderLine> orderLines = oldOrder.getOrderLines();
+        for(OrderLine orderLine: orderLines){
+            inventoryRepo.increaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
+        }
+        orderRepo.deleteById(id);
+    }
+
+    @PutMapping("/")
+    public ResponseEntity updateOrder(@RequestBody Order newOrder){
+        Order oldOrder = orderRepo.getById(newOrder.getId());
+        if(oldOrder == null)
+            return ResponseEntity.status(404).body("Order Id not found");
+        List<OrderLine> oldOrderLines = oldOrder.getOrderLines();
+        for(OrderLine orderLine: oldOrderLines){
+
+            inventoryRepo.increaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
+        }
+        orderRepo.deleteOrderLines(oldOrder.getId());
+        oldOrderLines.clear();
+        oldOrder.setCustomer(newOrder.getCustomer());
+        oldOrder.setStaff(newOrder.getStaff());
+        oldOrder.setInstalment(newOrder.isInstalment());
+        oldOrder.setNote(newOrder.getNote());
+        oldOrder.setPaid(newOrder.getPaid());
+
+        List<OrderLine> newOrderLines = newOrder.getOrderLines();
+
+        for(OrderLine orderLine: newOrderLines){
+            orderLine.setOrder(oldOrder);
+            //order.getOrderLines().add(orderLine);
+            int quantity = inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock();
+            if(orderLine.getQuantity()> quantity){
+                return ResponseEntity.status(400).body("Not enough stock in store for product: "+ orderLine.getProduct().getCode()+"/n"
+                        +"Stock in store: "+quantity+"/n"
+                        +"Request: "+orderLine.getQuantity());
+            }
+            oldOrder.getOrderLines().add(orderLine);
             inventoryRepo.decreaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
         }
-        order.calculateTotalPrice();
-        orderRepo.save(order);
-
+        orderRepo.save(oldOrder);
+        return ResponseEntity.ok().body(oldOrder);
     }
-*/
 
+    @GetMapping("/topcustomer")
+    public ResponseEntity getTopCustomer(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        return ResponseEntity.ok().body(orderRepo.getTopCustomer(start,end));
+    }
+
+    @GetMapping("/bestseller")
+    public ResponseEntity getBestseller(){
+        return ResponseEntity.ok().body(orderRepo.getBestSeller());
+    }
+
+    @GetMapping("/unpaid")
+    public ResponseEntity getUnpaidOrder(){
+        return ResponseEntity.ok().body(orderRepo.getUnpaidOrder());
+    }
 
 }

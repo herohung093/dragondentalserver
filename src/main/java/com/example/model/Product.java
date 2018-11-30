@@ -39,10 +39,8 @@ public class Product  {
         this.code = code;
         this.price = Float.valueOf(0);
     }
-
-    public Product(String code, String unit) {
+    public Product(String code, String name) {
         this.code = code;
-        this.unit = unit;
         this.price = Float.valueOf(0);
     }
 

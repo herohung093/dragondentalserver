@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -26,13 +28,6 @@ public class ProductInputController {
     ProductRepo productRepo;
     @Autowired
     InventoryRepo inventoryRepo;
-/*    @GetMapping("/productinput")
-     void updateProductInput(@RequestParam("product") Product p, @RequestParam("quantity") int quantity, @RequestParam("staff") Staff s, @RequestParam("description") String des){
-        //staffRepo.save(s);
-        ProductInput pi= new ProductInput(p,des,quantity,s);
-        ProductInput a = productInputRepo.save(pi);
-        System.out.println("A: "+a.toString());
-    }*/
 
     @PostMapping("/")
     public ResponseEntity increaseStock(@RequestBody ProductInput productInput){
@@ -49,5 +44,45 @@ public class ProductInputController {
         productInputRepo.save(productInput);
 
         return ResponseEntity.ok().body("Product - Input added. /n Total Stock: "+ inventoryRepo.findByCode(productInput.getProduct().getCode()));
+    }
+
+    @GetMapping("/color/{color}")
+    public ResponseEntity getAllByColor(@PathVariable("color") String color){
+        List<ProductInput> products = productInputRepo.getAllByColor("-"+color);
+        return ResponseEntity.ok().body(products);
+    }
+
+    @GetMapping("/size/{size}")
+    public ResponseEntity getAllBySize(@PathVariable("size") String size) {
+        List<ProductInput> productInputs = productInputRepo.getAllByColor("-"+size+"-");
+        return ResponseEntity.ok().body(productInputs);
+    }
+
+    @GetMapping("/date/between")
+    public ResponseEntity getOrderBetween(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+        return ResponseEntity.ok().body(productInputRepo.getAllByDate(start,end));
+
+    }
+
+    @GetMapping("/{code}")
+    public ResponseEntity getAllByCode(@PathVariable("code") String code) {
+        List<ProductInput> productInputs = productInputRepo.getAllByCode(code);
+        return ResponseEntity.ok().body(productInputs);
+    }
+
+    @DeleteMapping("/{code}")
+    public ResponseEntity deleteByCode(@PathVariable("code") Long id){
+        ProductInput productInput = productInputRepo.getById(id);
+        if(productInput == null )
+            return ResponseEntity.badRequest().body("Product Input does not exist!");
+
+        productInputRepo.deleteById(id);
+        inventoryRepo.decreaseQuantity(productInput.getProduct().getCode(),productInput.getQuantity());
+
+        return ResponseEntity.ok().body("Product input deleted. current stock of Product: "
+                +inventoryRepo.findByCode(productInput.getProduct().getCode()).getStock());
     }
 }

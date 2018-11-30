@@ -12,7 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/products")
@@ -31,6 +34,41 @@ public class ProductController {
             return ResponseEntity.status(404).body("Product not found !");
         }
         return ResponseEntity.ok().body(products);
+    }
+    @GetMapping("/color")
+    public ResponseEntity getAllProductColor(){
+        List<Product> products = productRepo.findAll();
+        Set<String> colors = new HashSet<>();
+        for(Product product: products){
+            String code = product.getCode();
+            String[] output = code.split("-");
+            if(output.length == 3)
+                colors.add(output[2]);
+        }
+        return ResponseEntity.ok().body(colors);
+    }
+    @GetMapping("/color/{color}")
+    public ResponseEntity getAllByColor(@PathVariable("color") String color){
+        List<Product> products = productRepo.getAllByColor("-"+color);
+        return ResponseEntity.ok().body(products);
+    }
+
+    @GetMapping("/size/{size}")
+    public ResponseEntity getAllBySize(@PathVariable("size") String size){
+        List<Product> products = productRepo.getAllBySize("-"+size+"-");
+        return ResponseEntity.ok().body(products);
+    }
+    @GetMapping("/size")
+    public ResponseEntity getAllProductSize(){
+        List<Product> products = productRepo.findAll();
+        Set<String> colors = new HashSet<>();
+        for(Product product: products){
+            String code = product.getCode();
+            String[] output = code.split("-");
+            if(output.length == 3)
+                colors.add(output[1]);
+        }
+        return ResponseEntity.ok().body(colors);
     }
     @GetMapping("/{code}")
     public ResponseEntity getProductByCode(@PathVariable String code){
