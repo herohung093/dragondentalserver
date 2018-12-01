@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/order")
@@ -165,6 +167,44 @@ public class OrderController {
     @GetMapping("/unpaid")
     public ResponseEntity getUnpaidOrder(){
         return ResponseEntity.ok().body(orderRepo.getUnpaidOrder());
+    }
+
+    @GetMapping("/income")
+    public ResponseEntity getIncomeByTime(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        Float income = orderRepo.getIncomeByTime(start,end);
+
+        if(income == null)
+            return ResponseEntity.ok().body(0);
+        return ResponseEntity.ok().body(income);
+    }
+    @GetMapping("/income/{year}")
+    public ResponseEntity getIncomeOfMonths(@PathVariable("year") int year){
+        LocalDate currentDate = LocalDate.now();
+        int curentYear = currentDate.getYear();
+        int currentMonth = 12;
+        if(year == curentYear)
+             currentMonth = currentDate.getMonth().getValue();
+        HashMap<Integer, Float> values = new HashMap<>();
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.US);
+
+        for (int i = 1;i <= currentMonth;i++){
+            String monthString =""+i;
+            if(i<10)
+                monthString = "0"+i;
+            String startDateString = "01/"+monthString+"/"+year;
+            LocalDate startDate = LocalDate.parse(startDateString, dateFormat);
+            LocalDate endDate = startDate.withDayOfMonth(startDate.getMonth().length(startDate.isLeapYear()));
+            Float income = orderRepo.getIncomeByTime(startDate,endDate);
+            if(income ==null)
+                income = Float.valueOf(0);
+            values.put(i,income);
+        }
+        return ResponseEntity.ok().body(values);
+
     }
 
 }

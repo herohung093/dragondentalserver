@@ -63,4 +63,9 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     @Query(nativeQuery = true, value = "delete from order_line o where o.order_id = :id")
     void deleteOrderLines(@Param("id") Long id);
 
+    @Query(nativeQuery = true, value = "select sum(o.paid) from order_ o where create_at between :startDate and :endDate ")
+    Float getIncomeByTime(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+
+
 }
