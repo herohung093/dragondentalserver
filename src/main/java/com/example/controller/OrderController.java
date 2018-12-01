@@ -27,7 +27,7 @@ public class OrderController {
     private CustomerRepo customerRepo;
     @Autowired
     private InventoryRepo inventoryRepo;
-
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     @GetMapping("/")
     public ResponseEntity getAll(){
 
@@ -63,14 +63,12 @@ public class OrderController {
     }
     @GetMapping("/date")
     public ResponseEntity getOrderByDate(@RequestParam("date") String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate localDate = LocalDate.parse(date, formatter);
 
         return ResponseEntity.ok().body(orderRepo.findAllByCreateAtAfter(localDate));
     }
     @GetMapping("/date/between")
     public ResponseEntity getOrderBetween(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate start = LocalDate.parse(startDate, formatter);
         LocalDate end = LocalDate.parse(endDate, formatter);
         return ResponseEntity.ok().body(orderRepo.getAllByDate(start,end));
@@ -151,8 +149,6 @@ public class OrderController {
 
     @GetMapping("/topcustomer")
     public ResponseEntity getTopCustomer(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate start = LocalDate.parse(startDate, formatter);
         LocalDate end = LocalDate.parse(endDate, formatter);
 
@@ -171,7 +167,6 @@ public class OrderController {
 
     @GetMapping("/income")
     public ResponseEntity getIncomeByTime(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate start = LocalDate.parse(startDate, formatter);
         LocalDate end = LocalDate.parse(endDate, formatter);
 
@@ -184,9 +179,9 @@ public class OrderController {
     @GetMapping("/income/{year}")
     public ResponseEntity getIncomeOfMonths(@PathVariable("year") int year){
         LocalDate currentDate = LocalDate.now();
-        int curentYear = currentDate.getYear();
+        int currentYear = currentDate.getYear();
         int currentMonth = 12;
-        if(year == curentYear)
+        if(year == currentYear)
              currentMonth = currentDate.getMonth().getValue();
         HashMap<Integer, Float> values = new HashMap<>();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.US);
@@ -205,6 +200,23 @@ public class OrderController {
         }
         return ResponseEntity.ok().body(values);
 
+    }
+
+    @GetMapping("/soldproduct/{productCode}")
+    public ResponseEntity getSoldQuantity(@PathVariable("productCode") String productCode,
+                                          @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        return ResponseEntity.ok().body(orderRepo.getSoldQuantity(productCode,start,end));
+    }
+
+    @GetMapping("/dept")
+    public ResponseEntity getDepters(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+        return ResponseEntity.ok().body(orderRepo.getDebter(start, end));
     }
 
 }

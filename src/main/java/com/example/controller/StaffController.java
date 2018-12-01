@@ -16,7 +16,7 @@ public class StaffController {
     StaffRepo staffRepo;
 
 
-    @GetMapping("/get/{name}")
+    @GetMapping("/{name}")
     public ResponseEntity getByName(@PathVariable String name){
         Staff staff = staffRepo.findByName(name);
         if(staff== null){
@@ -25,7 +25,7 @@ public class StaffController {
         return ResponseEntity.ok().body(staff);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/")
     public ResponseEntity getAll(){
         List<Staff> staff = staffRepo.findAll();
         if(staff== null){
