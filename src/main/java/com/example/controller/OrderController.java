@@ -207,7 +207,6 @@ public class OrderController {
                                           @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
         LocalDate start = LocalDate.parse(startDate, formatter);
         LocalDate end = LocalDate.parse(endDate, formatter);
-
         return ResponseEntity.ok().body(orderRepo.getSoldQuantity(productCode,start,end));
     }
 
@@ -217,6 +216,13 @@ public class OrderController {
         LocalDate start = LocalDate.parse(startDate, formatter);
         LocalDate end = LocalDate.parse(endDate, formatter);
         return ResponseEntity.ok().body(orderRepo.getDebter(start, end));
+    }
+
+    @GetMapping("/dept/{id}")
+    public ResponseEntity getDeptById(@PathVariable("id") Long id){
+        float paid = orderRepo.getTotalPaidById(id);
+        float toPay = orderRepo.getTotalToPayById(id);
+        return ResponseEntity.ok().body(toPay-paid);
     }
 
 }

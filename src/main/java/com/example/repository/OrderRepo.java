@@ -74,4 +74,10 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
 
     @Query(nativeQuery = true, value = "select c.name as customer, (select sum(ol.total_price) from order_line ol where ol.order_id = o.order_id) as total, ord.paid as paid, o.order_id as orderId, ord.create_at as date from order_line o, order_ ord, customer c where ord.customer = c.id and o.order_id = ord.id and ord.create_at between :startDate and :endDate group by o.order_id, c.name, ord.paid,ord.create_at")
     List<Debter> getDebter(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(nativeQuery = true, value = "select sum(o.paid) from order_ o where o.customer = :id")
+    float getTotalPaidById(@Param("id") Long id);
+
+    @Query(nativeQuery = true, value = "select sum(ol.total_price) from order_line ol, order_ o where ol.order_id = o.id and o.customer = :id")
+    float getTotalToPayById(@Param("id") Long id);
 }
