@@ -25,7 +25,6 @@ public class DragonDentalApplication {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/").allowedOrigins("https://radiant-fjord-77052.herokuapp.com");
-                registry.addMapping("/").allowedOrigins("http://localhost:3000");
             }
         };
     }
