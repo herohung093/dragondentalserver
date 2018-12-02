@@ -14,7 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-@CrossOrigin(origins = "https://radiant-fjord-77052.herokuapp.com", maxAge = 3600)
+//@CrossOrigin(origins = "https://radiant-fjord-77052.herokuapp.com", maxAge = 3600)
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {

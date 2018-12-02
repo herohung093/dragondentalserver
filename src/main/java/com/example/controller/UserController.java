@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+//@RestController
 @RequestMapping("/users")
 public class UserController {
 
