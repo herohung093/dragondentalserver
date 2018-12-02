@@ -18,7 +18,7 @@ public class DragonDentalApplication {
     public static void main(String[] args) {
         SpringApplication.run(DragonDentalApplication.class, args);
     }
-    @Bean
+  /*  @Bean
     public WebMvcConfigurer corsConfigurer() {
             return new WebMvcConfigurerAdapter() {
                 @Override
@@ -26,5 +26,5 @@ public class DragonDentalApplication {
                     registry.addMapping("/**");
                 }
             };
-    }
+    }*/
 }
