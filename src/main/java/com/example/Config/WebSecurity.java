@@ -29,8 +29,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()));
                 */
+        http.csrf().disable().authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests()
                 .antMatchers("/").permitAll();
+
     }
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
