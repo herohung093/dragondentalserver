@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@CrossOrigin(origins = "https://radiant-fjord-77052.herokuapp.com", maxAge = 3600)
 @RestController
 @RequestMapping("/products")
 public class ProductController {

@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@CrossOrigin(origins = "https://radiant-fjord-77052.herokuapp.com", maxAge = 3600)
 @RestController
 @RequestMapping("/productinput")
 public class ProductInputController {
