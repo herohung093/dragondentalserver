@@ -22,7 +22,9 @@ public class DragonDentalApplication {
         return new WebMvcConfigurerAdapter() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+
                 registry.addMapping("/").allowedOrigins("https://radiant-fjord-77052.herokuapp.com");
+                registry.addMapping("/").allowedOrigins("http://localhost:3000");
             }
         };
     }
