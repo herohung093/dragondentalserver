@@ -32,7 +32,7 @@ public class OrderController {
     @GetMapping("/")
     public ResponseEntity getAll(){
 
-        return ResponseEntity.ok().body(orderRepo.findAll());
+        return ResponseEntity.ok().body(orderRepo.getAllOrder());
 
     }
     @GetMapping("/normal")

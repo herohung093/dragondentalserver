@@ -2,10 +2,7 @@ package com.example.repository;
 
 
 import com.example.model.Customer;
-import com.example.model.Interface.BestSeller;
-import com.example.model.Interface.Debter;
-import com.example.model.Interface.SoldProductQuantity;
-import com.example.model.Interface.TopCustomer;
+import com.example.model.Interface.*;
 import com.example.model.Order;
 import com.example.model.OrderLine;
 import com.example.model.Staff;
@@ -23,12 +20,13 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     Order save(Order order);
     List<Order> findAllByStaff(Staff staff);
     List<Order> findAllByCustomer(Customer customer);
-    @Override
-    List<Order> findAll();
+
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.customer = c.id and o.staff = s.name")
+    List<ResponseOrder> getAllOrder();
     void deleteById(Long id);
 
-    @Query("select o from Order o where o.createAt >= :date")
-    List<Order> findAllByCreateAtAfter(@Param("date") LocalDate date);
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.create_at >= :date and o.customer = c.id and o.staff = s.name")
+    List<ResponseOrder> findAllByCreateAtAfter(@Param("date") LocalDate date);
 
     List<Order> findAllByCreateAtBefore(LocalDate date);
     List<Order> findAllByCreateAt(LocalDate date);
