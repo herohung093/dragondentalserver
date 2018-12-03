@@ -80,4 +80,7 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
 
     @Query(nativeQuery = true, value = "select sum(ol.total_price) from order_line ol, order_ o where ol.order_id = o.id and o.customer = :id")
     float getTotalToPayById(@Param("id") Long id);
+
+    @Query(nativeQuery = true, value = "select * from order_ o where o.customer = :id")
+    List<Order> getOrderByCustomer(@Param("id") Long id);
 }

@@ -32,7 +32,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         //http.csrf().disable().authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests()
                 .antMatchers("/").permitAll();
-
+        http.cors().and().csrf().disable();
     }
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {

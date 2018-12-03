@@ -71,6 +71,7 @@ public class CustomerController {
 
                 System.out.println("customers [ten= " + customers[0] + " , sdt=" + customers[1] + "]"+ " , dia chi=" + customers[2]);
                 Customer customer = new Customer(new String(customers[0].getBytes("UTF-8")),new String(customers[1].getBytes("UTF-8")),new String(customers[2].getBytes("UTF-8")));
+
                 customerRepo.save(customer);
             }
 

@@ -147,4 +147,8 @@ public class OrderController {
         orderRepo.save(oldOrder);
         return ResponseEntity.ok().body(oldOrder);
     }
+    @GetMapping("/customer/{id}")
+    public ResponseEntity getOrderByCustomer(@PathVariable Long id){
+        return ResponseEntity.ok().body(orderRepo.getOrderByCustomer(id));
+    }
 }

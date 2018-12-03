@@ -28,6 +28,10 @@ public class ProductController {
     StaffRepo staffRepo;
     @Autowired
     InventoryRepo inventoryRepo;
+
+    @Autowired
+    CodeDetailController codeDetailController;
+
     @GetMapping("/")
     public ResponseEntity getAll(){
         List<Product> products = productRepo.findAll();
@@ -71,6 +75,18 @@ public class ProductController {
         }
         return ResponseEntity.ok().body(colors);
     }
+    @GetMapping("/name")
+    public ResponseEntity getAllProductName(){
+        List<Product> products = productRepo.findAll();
+        Set<String> names = new HashSet<>();
+        for(Product product: products){
+            String name = product.getCode();
+            String[] output = name.split("-");
+            if(output.length == 3)
+                names.add(output[0]);
+        }
+        return ResponseEntity.ok().body(names);
+    }
     @GetMapping("/{code}")
     public ResponseEntity getProductByCode(@PathVariable String code){
         Product p = productRepo.findByCode(code);
@@ -81,25 +97,21 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addProductWithQuantity(@RequestBody Product product, @RequestBody int quantity){
+    public ResponseEntity addProductWithQuantity(@RequestBody Product product){
         Product existing = productRepo.findByCode(product.getCode());
         System.out.println(product.toString());
         if(existing!= null){
             return ResponseEntity.status(409).body("The Product already exist.");
         }
-
-        Inventory inventory = inventoryRepo.findByCode(product.getCode());
-
-        if(inventory!= null){
-
-            inventory.setStock(quantity);
-            inventoryRepo.save(inventory);
-            return ResponseEntity.status(409).body("The Product already exist.");
-        }
-        inventory = new Inventory(product.getCode(),quantity);
         //add product into 2 tables
-        System.out.println(inventory.toString());
-        inventoryRepo.save(inventory);
+
+        String name = product.getCode();
+        String[] output = name.split("-");
+        if(output.length == 3){
+            codeDetailController.checkNameExist(output[0]);
+            codeDetailController.checkSizeExist(output[1]);
+            codeDetailController.checkColorExist(output[2]);
+        }//TODO: check if length =2 or 1
         productRepo.save(product);
 
         return ResponseEntity.ok().body("Product added");
