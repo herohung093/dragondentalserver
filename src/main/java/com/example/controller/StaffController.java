@@ -42,6 +42,13 @@ public class StaffController {
         if(exist!= null){
             return ResponseEntity.status(400).body("Staff already exist !");
         }
+        if(staff.getMobilePhone().equals("") || staff.getMobilePhone()==null) {
+            staff.setMobilePhone("N/A");
+        }
+        if(staff.getAddress().equals("") || staff.getAddress()==null) {
+            staff.setMobilePhone("N/A");
+        }
+
         staffRepo.save(staff);
         return ResponseEntity.ok().body(staff);
     }
