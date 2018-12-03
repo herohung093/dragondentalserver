@@ -46,7 +46,7 @@ public class StaffController {
             staff.setMobilePhone("N/A");
         }
         if(staff.getAddress().equals("") || staff.getAddress()==null) {
-            staff.setMobilePhone("N/A");
+            staff.setAddress("N/A");
         }
 
         staffRepo.save(staff);
