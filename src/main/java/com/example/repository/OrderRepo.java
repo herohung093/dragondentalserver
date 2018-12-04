@@ -30,22 +30,25 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
 
     List<Order> findAllByCreateAtBefore(LocalDate date);
     List<Order> findAllByCreateAt(LocalDate date);
+
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.id = :id and o.customer = c.id and o.staff = s.name")
+    ResponseOrder retrieveById(Long id);
     Order getById(Long id);
 
     @Query("SELECT new com.example.model.OrderLine(ol.product.code, ol.quantity, ol.price) FROM OrderLine ol WHERE ol.order.id = :id")
     List<OrderLine> getOrderItemsById(@Param("id") Long id);
 
     //get all normal orders
-    @Query("select o from Order o where o.isInstalment = false")
-    List<Order> getAllNormalOrder();
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.is_instalment = false and o.customer = c.id and o.staff = s.name")
+    List<ResponseOrder> getAllNormalOrder();
 
     //get all instalment orders
-    @Query("select o from Order o where o.isInstalment = true")
-    List<Order> getALlInstalment();
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.is_instalment = true and o.customer = c.id and o.staff = s.name")
+    List<ResponseOrder> getALlInstalment();
 
     //get orders from startDate to endDate
-    @Query("select o from Order o where o.createAt between :startDate and :endDate")
-    List<Order> getAllByDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.create_at between :startDate and :endDate and o.customer = c.id and o.staff = s.name")
+    List<ResponseOrder> getAllByDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
 
 
@@ -54,11 +57,12 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     List<TopCustomer> getTopCustomer(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query(nativeQuery = true, value = "SELECT o.product_code AS productCode, SUM(o.quantity) AS totalSold FROM order_line o" +
-            " group by o.product_code order by totalSold DESC LIMIT 30" )
+            " group by o.product_code order by totalSold DESC LIMIT 50" )
     List<BestSeller> getBestSeller();
 
-    @Query(nativeQuery = true, value = "SELECT  * from order_ o where o.paid = 0")
-    List<Order> getUnpaidOrder();
+   // @Query(nativeQuery = true, value = "SELECT  * from order_ o where o.paid = 0")
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.paid = 0 and o.customer = c.id and o.staff = s.name")
+    List<ResponseOrder> getUnpaidOrder();
 
     @Query(nativeQuery = true, value = "delete from order_line o where o.order_id = :id")
     void deleteOrderLines(@Param("id") Long id);
@@ -79,6 +83,6 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     @Query(nativeQuery = true, value = "select sum(ol.total_price) from order_line ol, order_ o where ol.order_id = o.id and o.customer = :id")
     float getTotalToPayById(@Param("id") Long id);
 
-    @Query(nativeQuery = true, value = "select * from order_ o where o.customer = :id")
-    List<Order> getOrderByCustomer(@Param("id") Long id);
+    @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.customer = :id and o.customer = c.id and o.staff = s.name")
+    List<ResponseOrder> getOrderByCustomer(@Param("id") Long id);
 }

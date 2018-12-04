@@ -52,4 +52,13 @@ public class StaffController {
         staffRepo.save(staff);
         return ResponseEntity.ok().body(staff);
     }
+
+    @DeleteMapping("/{name}")
+    public ResponseEntity updateStaff(@PathVariable String name){
+        Staff exist = staffRepo.findByName(name);
+        if(exist== null)
+           return ResponseEntity.ok().body("Staff name not found");
+        staffRepo.deleteByName(name);
+        return ResponseEntity.ok().body("Staff Deleted: ");
+    }
 }

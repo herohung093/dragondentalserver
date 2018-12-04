@@ -3,8 +3,10 @@ package com.example.controller;
 
 import com.example.model.Inventory;
 import com.example.model.Product;
+import com.example.model.ProductInput;
 import com.example.model.Staff;
 import com.example.repository.InventoryRepo;
+import com.example.repository.ProductInputRepo;
 import com.example.repository.ProductRepo;
 import com.example.repository.StaffRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,8 @@ public class ProductController {
     StaffRepo staffRepo;
     @Autowired
     InventoryRepo inventoryRepo;
-
+    @Autowired
+    ProductInputRepo productInputRepo;
     @Autowired
     CodeDetailController codeDetailController;
 
@@ -97,26 +100,33 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addProductWithQuantity(@RequestBody Product product){
-        Product existing = productRepo.findByCode(product.getCode());
+    public ResponseEntity addProductWithQuantity(@RequestBody ProductInput product){
+        Product existing = productRepo.findByCode(product.getProduct().getName());
         System.out.println(product.toString());
         if(existing!= null){
             return ResponseEntity.status(409).body("The Product already exist.");
         }
         //add product into 2 tables
 
-        String name = product.getCode();
+        String name = product.getProduct().getName();
         String[] output = name.split("-");
         if(output.length == 3){
             codeDetailController.checkNameExist(output[0]);
             codeDetailController.checkSizeExist(output[1]);
             codeDetailController.checkColorExist(output[2]);
-        }//TODO: check if length =2 or 1
-        productRepo.save(product);
-
+        }
+        if(output.length == 2){
+            codeDetailController.checkNameExist(output[0]);
+            codeDetailController.checkSizeExist(output[1]);
+        }
+        Staff staff  = staffRepo.findByName(product.getOperator().getName());
+        product.setOperator(staff);
+        productRepo.save(product.getProduct());
+        productInputRepo.save(product);
+        inventoryRepo.save(new Inventory(product.getProduct().getCode(),product.getQuantity()));
         return ResponseEntity.ok().body("Product added");
     }
-    @PostMapping("/add/inventory")
+/*    @PostMapping("/add/inventory")
     public ResponseEntity addProduct(@RequestBody Product product){
         System.out.println(product.toString());
         Product existing = productRepo.findByCode(product.getCode());
@@ -127,7 +137,7 @@ public class ProductController {
         productRepo.save(newProduct);
 
         return ResponseEntity.ok().body("Product added");
-    }
+    }*/
     @PutMapping("/decrease")
     public ResponseEntity decreaseProductStock(@RequestParam("code") String code, @RequestParam("quantity") int quantity){
         Product p = productRepo.findByCode(code);

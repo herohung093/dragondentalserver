@@ -14,4 +14,6 @@ public interface StaffRepo extends JpaRepository<Staff, String> {
     Staff save(Staff s);
     Staff findByName(String Name);
     List<Staff> findAll();
+
+    void deleteByName(String name);
 }

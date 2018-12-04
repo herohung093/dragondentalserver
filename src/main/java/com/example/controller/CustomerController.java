@@ -27,6 +27,15 @@ public class CustomerController {
         if(existing!= null){
             return ResponseEntity.status(409).body("Customer Already exist.");
         }
+        if(customer.getContactPerson().equals("") || customer.getContactPerson() == null){
+            customer.setContactPerson("N/A");
+        }
+        if(customer.getNote().equals("") || customer.getNote() == null){
+            customer.setNote("N/A");
+        }
+        if(customer.getPhone().equals("") || customer.getPhone() == null){
+            customer.setPhone("N/A");
+        }
         customerRepo.save(customer);
         return ResponseEntity.ok().body("Customer has been added");
     }
@@ -35,7 +44,7 @@ public class CustomerController {
     public ResponseEntity getByName(@PathVariable String name){
         Customer customer = customerRepo.findByName(name);
         if(customer== null){
-            return ResponseEntity.status(404).body("Staff not found !");
+            return ResponseEntity.status(404).body("Customer not found !");
         }
         return ResponseEntity.ok().body(customer);
     }

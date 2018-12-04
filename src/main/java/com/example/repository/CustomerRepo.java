@@ -16,7 +16,7 @@ public interface CustomerRepo extends JpaRepository<Customer, Long> {
     Customer findById (long id);
     @Override
     List<Customer> findAll();
-    @Query("update Customer c set  c.name = :name, c.address = :address, c.note = :note, c.contactPerson = :contactperson, c.phone = :phone ")
+    @Query("update Customer c set  c.name = :name, c.address = :address, c.note = :note, c.contactPerson = :contactPerson, c.phone = :phone ")
     void updateCustomer(@Param("name")String name, @Param("address")String address
-            ,@Param("note")String note,@Param("contactperson")String contacperson,@Param("phone")String phone);
+            ,@Param("note")String note,@Param("contactPerson")String contacperson,@Param("phone")String phone);
 }

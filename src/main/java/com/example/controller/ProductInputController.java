@@ -31,7 +31,7 @@ public class ProductInputController {
     InventoryRepo inventoryRepo;
 
     @PostMapping("/")
-    public ResponseEntity increaseStock(@RequestBody ProductInput productInput){
+    public ResponseEntity addStock(@RequestBody ProductInput productInput){
         Product existing = productRepo.findByCode(productInput.getProduct().getCode());
         Staff staff = staffRepo.findByName(productInput.getOperator().getName());
         if(existing== null){

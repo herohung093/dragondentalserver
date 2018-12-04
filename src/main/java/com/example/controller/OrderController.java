@@ -50,7 +50,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity getById(@PathVariable Long id){
 
-        return ResponseEntity.ok().body(orderRepo.getById(id));
+        return ResponseEntity.ok().body(orderRepo.retrieveById(id));
 
     }
     @GetMapping("/{id}/items")
@@ -77,9 +77,18 @@ public class OrderController {
     }
     @PostMapping("/")
     public ResponseEntity createOrder(@RequestBody Order order){
+
+        Staff staff = staffRepo.findByName(order.getStaff().getName());
+        if( staff == null){
+            return ResponseEntity.status(400).body("Staff not found. Bad request");
+        }
+        Customer customer = customerRepo.findByName(order.getCustomer().getName());
+        if( customer == null){
+            return ResponseEntity.status(400).body("Customer not found. Bad request");
+        }
         List<OrderLine> orderLines = order.getOrderLines();
-        if(order == null || orderLines == null){
-            return ResponseEntity.status(400).body("Order or OrderLines is null. Bad request");
+        if( orderLines == null){
+            return ResponseEntity.status(400).body("there is no item to create order. Bad request");
         }
 
         //Order order = new Order();
