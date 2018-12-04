@@ -100,15 +100,15 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addProductWithQuantity(@RequestBody ProductInput product){
-        Product existing = productRepo.findByCode(product.getProduct().getName());
-        System.out.println(product.toString());
+    public ResponseEntity addProductWithQuantity(@RequestBody ProductInput productInput){
+        Product existing = productRepo.findByCode(productInput.getProduct().getName());
+        System.out.println(productInput.toString());
         if(existing!= null){
             return ResponseEntity.status(409).body("The Product already exist.");
         }
-        //add product into 2 tables
+        //add productInput into 2 tables
 
-        String name = product.getProduct().getName();
+        String name = productInput.getProduct().getName();
         String[] output = name.split("-");
         if(output.length == 3){
             codeDetailController.checkNameExist(output[0]);
@@ -119,11 +119,13 @@ public class ProductController {
             codeDetailController.checkNameExist(output[0]);
             codeDetailController.checkSizeExist(output[1]);
         }
-        Staff staff  = staffRepo.findByName(product.getOperator().getName());
-        product.setOperator(staff);
-        productRepo.save(product.getProduct());
-        productInputRepo.save(product);
-        inventoryRepo.save(new Inventory(product.getProduct().getCode(),product.getQuantity()));
+        Staff staff  = staffRepo.findByName(productInput.getOperator().getName());
+        Product product = new Product(productInput.getProduct().getCode(),0,"N/A");
+        productInput.setOperator(staff);
+
+        productRepo.save(product);
+        productInputRepo.save(productInput);
+        inventoryRepo.save(new Inventory(productInput.getProduct().getCode(),productInput.getQuantity()));
         return ResponseEntity.ok().body("Product added");
     }
 /*    @PostMapping("/add/inventory")
