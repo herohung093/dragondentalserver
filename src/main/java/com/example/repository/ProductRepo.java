@@ -18,7 +18,7 @@ import java.util.List;
 @Transactional
 public interface ProductRepo extends JpaRepository<Product, String> {
 
-    @Query(value = "select p from Product p where p.code = :code")
+    @Query("select p from Product p where p.code = :code")
     Product findByCode(@Param("code")String code);
     @Override
     List<Product> findAll();

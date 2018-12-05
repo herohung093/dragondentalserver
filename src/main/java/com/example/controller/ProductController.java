@@ -120,7 +120,9 @@ public class ProductController {
             codeDetailController.checkSizeExist(output[1]);
         }
         Staff staff  = staffRepo.findByName(productInput.getOperator().getName());
-        Product product = new Product(productInput.getProduct().getCode(),0,"N/A");
+        Product product = productInput.getProduct();
+        if(product.getUnit().equals(""))
+            product.setUnit("N/A");
         productInput.setOperator(staff);
 
         productRepo.save(product);
@@ -128,18 +130,7 @@ public class ProductController {
         inventoryRepo.save(new Inventory(productInput.getProduct().getCode(),productInput.getQuantity()));
         return ResponseEntity.ok().body("Product added");
     }
-/*    @PostMapping("/add/inventory")
-    public ResponseEntity addProduct(@RequestBody Product product){
-        System.out.println(product.toString());
-        Product existing = productRepo.findByCode(product.getCode());
-        if(existing!= null){
-            return ResponseEntity.status(409).body("The Product already exist.");
-        }
-    Product newProduct = new Product(product.getCode());
-        productRepo.save(newProduct);
 
-        return ResponseEntity.ok().body("Product added");
-    }*/
     @PutMapping("/decrease")
     public ResponseEntity decreaseProductStock(@RequestParam("code") String code, @RequestParam("quantity") int quantity){
         Product p = productRepo.findByCode(code);
@@ -159,5 +150,5 @@ public class ProductController {
         inventoryRepo.updateStock(code,quantity);
         return ResponseEntity.ok().body("Product quantity has been updated");
     }
-
+//TODO write update API for product
 }

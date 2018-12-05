@@ -46,7 +46,17 @@ public class ProductInputController {
 
         return ResponseEntity.ok().body("Product - Input added. /n Total Stock: "+ inventoryRepo.findByCode(productInput.getProduct().getCode()));
     }
+    @PutMapping("/")
+    public ResponseEntity SetStock(@RequestBody ProductInput productInput){
+        Product existing = productRepo.findByCode(productInput.getProduct().getCode());
+        Staff staff = staffRepo.findByName(productInput.getOperator().getName());
 
+        inventoryRepo.updateStock(productInput.getProduct().getCode(),productInput.getQuantity());
+        productInput.setDescription(productInput.getDescription() + "Reset stock");
+        productInputRepo.save(productInput);
+
+        return ResponseEntity.ok().body("Product - Input added. /n Total Stock: "+ inventoryRepo.findByCode(productInput.getProduct().getCode()));
+    }
     @GetMapping("/color/{color}")
     public ResponseEntity getAllByColor(@PathVariable("color") String color){
         List<ProductInput> products = productInputRepo.getAllByColor("-"+color);
@@ -85,5 +95,10 @@ public class ProductInputController {
 
         return ResponseEntity.ok().body("Product input deleted. current stock of Product: "
                 +inventoryRepo.findByCode(productInput.getProduct().getCode()).getStock());
+    }
+
+    @GetMapping("/")
+    public ResponseEntity getAll(){
+        return ResponseEntity.ok().body(productInputRepo.findAll());
     }
 }

@@ -12,6 +12,7 @@ import static java.nio.charset.StandardCharsets.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 //@CrossOrigin(origins = "https://radiant-fjord-77052.herokuapp.com", maxAge = 3600)
@@ -65,29 +66,45 @@ public class CustomerController {
         customerRepo.updateCustomer(customer.getName(),customer.getAddress(),customer.getNote(),customer.getContactPerson(),customer.getPhone());
         return ResponseEntity.ok().body("Customer updated");
     }
-    @GetMapping("/import")
+   /* @GetMapping("/import")
     public ResponseEntity importData(){
         String csvfile="Customer.csv";
         String line = "";
         String cvsSplitBy = ",";
-
+        ArrayList<Customer> customerss = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(csvfile))) {
+
 
             while ((line = br.readLine()) != null) {
 
                 // use comma as separator
                 String[] customers = line.split(cvsSplitBy);
 
-                System.out.println("customers [ten= " + customers[0] + " , sdt=" + customers[1] + "]"+ " , dia chi=" + customers[2]);
-                Customer customer = new Customer(new String(customers[0].getBytes("UTF-8")),new String(customers[1].getBytes("UTF-8")),new String(customers[2].getBytes("UTF-8")));
+                if(customers.length == 3){
+                    System.out.println("customers [ten= " + customers[0] + " , sdt=" + customers[1] + "]"+ " , dia chi=" + customers[2]);
+                    Customer customer = new Customer(new String(customers[0].replace("\"","")),new String(customers[1].replace("\"","")),new String(customers[2]).replace("\"",""));
+                    //customerss.add(customer);
+                    customerRepo.save(customer);
+                }
+                if(customers.length == 4){
+                    System.out.println("customers [ten= " + customers[0] + " , sdt=" + customers[1] + "]"+ " , dia chi=" + customers[2]);
+                    Customer customer = new Customer(new String(customers[0].replace("\"","")),new String(customers[1].replace("\"","")),new String(customers[2].replace("\"","")+", "+customers[3].replace("\"","")));
+                    //customerss.add(customer);
+                    customerRepo.save(customer);
+                }
+                if(customers.length == 5){
+                    System.out.println("customers [ten= " + customers[0] + " , sdt=" + customers[1] + "]"+ " , dia chi=" + customers[2]);
+                    Customer customer = new Customer(new String(customers[0].replace("\"","")),new String(customers[1].replace("\"","")),new String(customers[2].replace("\"","")+", "+customers[3].replace("\"","")+", "+customers[4].replace("\"","")));
+                    //customerss.add(customer);
+                    customerRepo.save(customer);
+                }
 
-                customerRepo.save(customer);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return ResponseEntity.ok().body("done");
-    }
+        return ResponseEntity.ok().body(customerss);
+    }*/
 }
