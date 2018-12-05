@@ -53,6 +53,8 @@ public class ProductInputController {
 
         inventoryRepo.updateStock(productInput.getProduct().getCode(),productInput.getQuantity());
         productInput.setDescription(productInput.getDescription() + "Reset stock");
+        productInput.setOperator(staff);
+        productInput.setProduct(existing);
         productInputRepo.save(productInput);
 
         return ResponseEntity.ok().body("Product - Input added. /n Total Stock: "+ inventoryRepo.findByCode(productInput.getProduct().getCode()));

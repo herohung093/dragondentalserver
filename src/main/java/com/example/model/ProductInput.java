@@ -7,7 +7,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt"},allowGetters = true)
@@ -30,7 +29,7 @@ import java.util.List;
     private int quantity;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff")
-    private Staff Operator;
+    private Staff operator;
 
     public ProductInput() {
     }
@@ -39,7 +38,7 @@ import java.util.List;
         this.product = product;
         this.description = description;
         this.quantity = quantity;
-        Operator = operator;
+        this.operator = operator;
     }
 
     public long getId() {
@@ -67,7 +66,7 @@ import java.util.List;
     }
 
     public Staff getOperator() {
-        return Operator;
+        return operator;
     }
 
     public void setId(long id) {
@@ -87,7 +86,7 @@ import java.util.List;
     }
 
     public void setOperator(Staff operator) {
-        Operator = operator;
+        this.operator = operator;
     }
 
     @Override
@@ -99,7 +98,7 @@ import java.util.List;
                 ", updateAt=" + updateAt +
                 ", description='" + description + '\'' +
                 ", quantity=" + quantity +
-                ", Operator=" + Operator +
+                ", operator=" + operator +
                 '}';
     }
 }
