@@ -65,7 +65,7 @@ public class ProductInputController {
         Product existing = productRepo.findByCode(productInput.getProduct().getCode());
         Staff staff = staffRepo.findByName(productInput.getOperator().getName());
 
-        inventoryRepo.decreaseQuantity(productInput.getProduct().getCode(),productInput.getQuantity());
+        inventoryRepo.increaseQuantity(productInput.getProduct().getCode(),productInput.getQuantity());
         productInput.setDescription(productInput.getDescription() + ". Increase stock");
         productInput.setOperator(staff);
         productInput.setProduct(existing);
