@@ -131,15 +131,7 @@ public class ProductController {
         return ResponseEntity.ok().body("Product added");
     }
 
-    @PutMapping("/decrease")
-    public ResponseEntity decreaseProductStock(@RequestParam("code") String code, @RequestParam("quantity") int quantity){
-        Product p = productRepo.findByCode(code);
-        if(p== null){
-            return ResponseEntity.status(404).body("Product not found !");
-        }
-        inventoryRepo.decreaseQuantity(code,quantity);
-        return ResponseEntity.ok().body("Product quantity has changed");
-    }
+
 
     @PutMapping("/{code}/{quantity}")
     public ResponseEntity updateProductStock(@PathVariable("code") String code, @PathVariable("quantity") int quantity){
