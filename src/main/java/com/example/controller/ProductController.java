@@ -123,6 +123,7 @@ public class ProductController {
         Product product = productInput.getProduct();
         if(product.getUnit().equals(""))
             product.setUnit("N/A");
+
         productInput.setOperator(staff);
 
         productRepo.save(product);

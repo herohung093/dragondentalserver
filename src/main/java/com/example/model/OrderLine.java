@@ -74,6 +74,7 @@ public class OrderLine implements Serializable {
     }
 
     public void setOrder(Order order) {
+        getTotalPrice();
         this.order = order;
     }
 
