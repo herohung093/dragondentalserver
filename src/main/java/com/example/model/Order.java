@@ -124,8 +124,8 @@ public class Order {
         this.orderLines = orderLines;
 
     }
-    public void addProduct(Product product, int quantity, float price){
-        OrderLine orderLine = new OrderLine(product.getCode(), this, quantity, price);
+    public void addProduct(Product product, int quantity, float price, int discount){
+        OrderLine orderLine = new OrderLine(product.getCode(), this, quantity, price, discount);
         orderLines.add(orderLine);
         product.getOrderLines().add(orderLine);
     }

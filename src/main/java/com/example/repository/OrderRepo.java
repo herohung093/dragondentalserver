@@ -35,7 +35,7 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     ResponseOrder retrieveById(Long id);
     Order getById(Long id);
 
-    @Query("SELECT new com.example.model.OrderLine(ol.product.code, ol.quantity, ol.price) FROM OrderLine ol WHERE ol.order.id = :id")
+    @Query("SELECT new com.example.model.OrderLine(ol.product.code, ol.quantity, ol.price, ol.discount) FROM OrderLine ol WHERE ol.order.id = :id")
     List<OrderLine> getOrderItemsById(@Param("id") Long id);
 
     //get all normal orders

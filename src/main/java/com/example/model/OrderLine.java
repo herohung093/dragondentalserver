@@ -1,9 +1,6 @@
 package com.example.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -17,12 +14,16 @@ public class OrderLine implements Serializable {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private int quantity;
     private float price;
+    private int discount;
     private float totalPrice;
 
     private void calculateTotalPrice(){
-        totalPrice=quantity * price;
+        totalPrice=((quantity * price)*(100-discount))/100;
     }
     public float getTotalPrice() {
         calculateTotalPrice();
@@ -32,30 +33,34 @@ public class OrderLine implements Serializable {
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
     }
-    public OrderLine(Product product, Order order, int quantity, float price) {
+    public OrderLine(Product product, Order order, int quantity, float price, int discount) {
         this.product = product;
         this.order = order;
         this.quantity = quantity;
         this.price = price;
+        this.discount = discount;
         getTotalPrice();
     }
-    public OrderLine(String product, Order order, int quantity, float price) {
+    public OrderLine(String product, Order order, int quantity, float price, int discount) {
         this.product = new Product(product);
         this.order = order;
         this.quantity = quantity;
         this.price = price;
+        this.discount = discount;
         getTotalPrice();
     }
-    public OrderLine(Product product, int quantity, float price) {
+    public OrderLine(Product product, int quantity, float price, int discount) {
         this.product = product;
         this.quantity = quantity;
         this.price = price;
+        this.discount = discount;
         getTotalPrice();
     }
-    public OrderLine(String productCode, int quantity, float price){
+    public OrderLine(String productCode, int quantity, float price, int discount){
         this.product = new Product(productCode);
         this.quantity = quantity;
         this.price = price;
+        this.discount = discount;
         getTotalPrice();
     }
     public OrderLine() {
@@ -74,8 +79,24 @@ public class OrderLine implements Serializable {
     }
 
     public void setOrder(Order order) {
-        getTotalPrice();
+        //getTotalPrice();
         this.order = order;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
     }
 
     public int getQuantity() {
@@ -101,6 +122,7 @@ public class OrderLine implements Serializable {
                 ", order=" + order +
                 ", quantity=" + quantity +
                 ", price=" + price +
+                ", discount=" + discount +
                 '}';
     }
 
