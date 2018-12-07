@@ -1,11 +1,13 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-public class OrderLine implements Serializable {
+public class OrderLine implements Serializable{
     @Id
     @ManyToOne
     @JoinColumn(name = "product_code")
@@ -15,7 +17,8 @@ public class OrderLine implements Serializable {
     @JoinColumn(name = "order_id")
     private Order order;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="EVENT_SEQ")
+    @SequenceGenerator(name="EVENT_SEQ", sequenceName="EVENT_SEQ", allocationSize=20)
     private long id;
     private int quantity;
     private float price;
@@ -119,7 +122,7 @@ public class OrderLine implements Serializable {
     public String toString() {
         return "OrderLine{" +
                 "product=" + product.getCode() +
-                ", order=" + order +
+                ", order=" + //order +
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", discount=" + discount +

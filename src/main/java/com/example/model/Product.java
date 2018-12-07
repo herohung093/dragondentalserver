@@ -1,6 +1,7 @@
 package com.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,8 +19,8 @@ public class Product  {
             cascade =  CascadeType.ALL,
             mappedBy = "product")
     private Inventory inventory;
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = CascadeType.ALL)
     private List<OrderLine> orderLines;
     public Product(String code, String name, float price, String unit) {
         this.code = code;

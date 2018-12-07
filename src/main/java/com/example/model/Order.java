@@ -1,8 +1,6 @@
 package com.example.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,11 +34,7 @@ public class Order {
     private float paid = 0;
     private boolean isInstalment;
 
-
-
-
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", cascade = CascadeType.ALL)
     List<OrderLine> orderLines = new ArrayList<>();
 
     public Order(Customer customer, Staff staff) {
@@ -148,7 +142,7 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "id=" + id +
-                ", customer=" + customer.getContactPerson() +
+                ", customer=" + customer +
                 ", staff=" + staff.getName() +
                 ", createAt=" + createAt +
                 ", updateAt=" + updateAt +

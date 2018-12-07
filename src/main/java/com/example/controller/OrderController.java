@@ -3,6 +3,8 @@ package com.example.controller;
 import com.example.model.*;
 import com.example.repository.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,7 @@ public class OrderController {
     @Autowired
     private InventoryRepo inventoryRepo;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    Logger logger = LoggerFactory.getLogger(OrderController.class);
     @GetMapping("/")
     public ResponseEntity getAll(){
 
@@ -86,15 +89,22 @@ public class OrderController {
         if( customer == null){
             return ResponseEntity.status(400).body("Customer not found. Bad request");
         }
-        List<OrderLine> orderLines = order.getOrderLines();
+        List<OrderLine> orderLines = new ArrayList<>();
+                orderLines.addAll(order.getOrderLines());
+        System.out.println("Order: "+order);
         if( orderLines == null){
             return ResponseEntity.status(400).body("there is no item to create order. Bad request");
         }
-
-        //Order order = new Order();
+        System.out.println(orderLines.toString());
+        Order newOrder = new Order(customer,staff);
+        newOrder.setPaid(order.getPaid());
+        newOrder.setNote(order.getNote());
+        newOrder.setInstalment(order.isInstalment());
+        //orderRepo.save(newOrder);
+        System.out.println(orderLines.size());
         for(OrderLine orderLine: orderLines){
-            orderLine.setOrder(order);
-            //order.getOrderLines().add(orderLine);
+            orderLine.setOrder(newOrder);
+            newOrder.getOrderLines().add(orderLine);
             int quantity = inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock();
             if(orderLine.getQuantity()> quantity){
                 return ResponseEntity.status(400).body("Not enough stock in store for product: "+ orderLine.getProduct().getCode()+"/n"
@@ -103,8 +113,10 @@ public class OrderController {
             }
             inventoryRepo.decreaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
         }
-        orderRepo.save(order);
-        return ResponseEntity.ok().body("Order has been update");
+
+        order.setOrderLines(orderLines);
+        orderRepo.save(newOrder);
+        return ResponseEntity.ok().body("Order Created");
     }
 
     @DeleteMapping("/{id}")
