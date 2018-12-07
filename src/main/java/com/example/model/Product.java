@@ -20,7 +20,7 @@ public class Product  {
             mappedBy = "product")
     private Inventory inventory;
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     private List<OrderLine> orderLines;
     public Product(String code, String name, float price, String unit) {
         this.code = code;
