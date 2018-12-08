@@ -57,6 +57,10 @@ public class Customer {
         this.note = note;
     }
 
+    public Customer(String name) {
+        this.name = name;
+    }
+
     public Customer() {
     }
 
