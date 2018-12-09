@@ -150,15 +150,16 @@ public class OrderController {
 
         if(newOrderLines.size()>0){
             for(OrderLine orderLine: newOrderLines){
-                orderLine.setOrder(oldOrder);
-                oldOrder.getOrderLines().add(orderLine);
-                int quantity = inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock();
-                if(orderLine.getQuantity()> quantity){
-                    return ResponseEntity.status(400).body("Not enough stock in store for product: "+ orderLine.getProduct().getCode()+"/n"
+                OrderLine newOrderLine = new OrderLine(orderLine.getProduct(),oldOrder,orderLine.getQuantity(),orderLine.getPrice(),orderLine.getDiscount());
+                //orderLine.setOrder(oldOrder);
+                oldOrder.getOrderLines().add(newOrderLine);
+                int quantity = inventoryRepo.findByCode(newOrderLine.getProduct().getCode()).getStock();
+                if(newOrderLine.getQuantity()> quantity){
+                    return ResponseEntity.status(400).body("Not enough stock in store for product: "+ newOrderLine.getProduct().getCode()+"/n"
                             +"Stock in store: "+quantity+"/n"
-                            +"Request: "+orderLine.getQuantity());
+                            +"Request: "+newOrderLine.getQuantity());
                 }
-                orderRepo.updateOrderItem(oldOrder.getId(),orderLine.getProduct().getCode(),orderLine.getPrice(),orderLine.getQuantity(),orderLine.getDiscount(),orderLine.getTotalPrice());
+                orderRepo.updateOrderItem(oldOrder.getId(),newOrderLine.getProduct().getCode(),newOrderLine.getPrice(),newOrderLine.getQuantity(),newOrderLine.getDiscount(),newOrderLine.getTotalPrice(),newOrderLines.indexOf(orderLine));
                 inventoryRepo.decreaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
             }
         }

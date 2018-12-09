@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
+@Transactional
 public interface OrderRepo  extends JpaRepository<Order, Long> {
 
     Order save(Order order);
@@ -65,7 +66,7 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
    // @Query(nativeQuery = true, value = "SELECT  * from order_ o where o.paid = 0")
     @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.paid = 0 and o.customer = c.id and o.staff = s.name")
     List<ResponseOrder> getUnpaidOrder();
-
+    @Modifying
     @Query(nativeQuery = true, value = "delete from order_line o where o.order_id = :id")
     void deleteOrderLines(@Param("id") Long id);
 
@@ -96,9 +97,9 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
 
     @Transactional
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(nativeQuery = true, value = "insert into order_line (order_id, product_code, price, quantity, discount, total_price) values (:order, :code,:price,:quantity,:discount,:totalPrice)")
+    @Query(nativeQuery = true, value = "insert into order_line (order_id, product_code, price, quantity, discount, total_price, id) values (:order, :code,:price,:quantity,:discount,:totalPrice,:id)")
     void updateOrderItem(@Param("order")long order,@Param("code")String code,@Param("price")float price,
-                         @Param("quantity")int quantity, @Param("discount")int discount, @Param("totalPrice")float totalPrice);
+                         @Param("quantity")int quantity, @Param("discount")int discount, @Param("totalPrice")float totalPrice, @Param("id")int id);
 
 
 }
