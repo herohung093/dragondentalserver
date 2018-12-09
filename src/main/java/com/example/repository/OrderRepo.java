@@ -7,9 +7,11 @@ import com.example.model.Order;
 import com.example.model.OrderLine;
 import com.example.model.Staff;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -74,7 +76,8 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
             "from order_line o, order_ ord, customer c where c.id = ord.customer and o.product_code = :code and o.order_id = ord.id and ord.create_at between :startDate and :endDate")
     List<SoldProductQuantity> getSoldQuantity(@Param("code") String code, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    @Query(nativeQuery = true, value = "select c.name as customer, (select sum(ol.total_price) from order_line ol where ol.order_id = o.order_id) as total, ord.paid as paid, o.order_id as orderId, ord.create_at as date from order_line o, order_ ord, customer c where ord.customer = c.id and o.order_id = ord.id and ord.create_at between :startDate and :endDate group by o.order_id, c.name, ord.paid,ord.create_at")
+    @Query(nativeQuery = true, value = "select c.name as customer, (select sum(ol.total_price) from order_line ol where ol.order_id = o.order_id) as total, ord.paid as paid, o.order_id as orderId, " +
+            "ord.create_at as date from order_line o, order_ ord, customer c where ord.customer = c.id and o.order_id = ord.id and ord.create_at between :startDate and :endDate group by o.order_id, c.name, ord.paid,ord.create_at")
     List<Debter> getDebter(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query(nativeQuery = true, value = "select sum(o.paid) from order_ o where o.customer = :id")
@@ -85,4 +88,17 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
 
     @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.customer = :id and o.customer = c.id and o.staff = s.name")
     List<ResponseOrder> getOrderByCustomer(@Param("id") Long id);
+
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update Order o set o.paid = :paid, o.note = :note, o.isInstalment = :instalment where o.id = :id")
+    void updateOrder(@Param("id") long id,@Param("paid") float paid, @Param("note") String note,@Param("instalment")boolean instalment);
+
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query(nativeQuery = true, value = "insert into order_line (order_id, product_code, price, quantity, discount, total_price) values (:order, :code,:price,:quantity,:discount,:totalPrice)")
+    void updateOrderItem(@Param("order")long order,@Param("code")String code,@Param("price")float price,
+                         @Param("quantity")int quantity, @Param("discount")int discount, @Param("totalPrice")float totalPrice);
+
+
 }

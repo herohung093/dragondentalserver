@@ -55,7 +55,7 @@ public class Order {
         return isInstalment;
     }
 
-    public void setInstalment(boolean instalment) {
+    public void setIsInstalment(boolean instalment) {
         isInstalment = instalment;
     }
 

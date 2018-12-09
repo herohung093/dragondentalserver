@@ -91,17 +91,14 @@ public class OrderController {
         }
         List<OrderLine> orderLines = new ArrayList<>();
                 orderLines.addAll(order.getOrderLines());
-        System.out.println("Order: "+order);
         if( orderLines == null){
             return ResponseEntity.status(400).body("there is no item to create order. Bad request");
         }
-        System.out.println(orderLines.toString());
         Order newOrder = new Order(customer,staff);
         newOrder.setPaid(order.getPaid());
         newOrder.setNote(order.getNote());
-        newOrder.setInstalment(order.isInstalment());
+        newOrder.setIsInstalment(order.isInstalment());
         //orderRepo.save(newOrder);
-        System.out.println(orderLines.size());
         for(OrderLine orderLine: orderLines){
             orderLine.setOrder(newOrder);
             newOrder.getOrderLines().add(orderLine);
@@ -139,34 +136,33 @@ public class OrderController {
         if(oldOrder == null)
             return ResponseEntity.status(404).body("Order Id not found");
         List<OrderLine> oldOrderLines = oldOrder.getOrderLines();
-        for(OrderLine orderLine: oldOrderLines){
+        if(oldOrderLines.size()>0){
+            orderRepo.deleteOrderLines(oldOrder.getId());
+            for(OrderLine orderLine: oldOrderLines){
 
-            inventoryRepo.increaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
-        }
-        orderRepo.deleteOrderLines(oldOrder.getId());
-        oldOrderLines.clear();
-        oldOrder.setCustomer(newOrder.getCustomer());
-        oldOrder.setStaff(newOrder.getStaff());
-        oldOrder.setInstalment(newOrder.isInstalment());
-        oldOrder.setNote(newOrder.getNote());
-        oldOrder.setPaid(newOrder.getPaid());
-
-        List<OrderLine> newOrderLines = newOrder.getOrderLines();
-
-        for(OrderLine orderLine: newOrderLines){
-            orderLine.setOrder(oldOrder);
-            //order.getOrderLines().add(orderLine);
-            int quantity = inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock();
-            if(orderLine.getQuantity()> quantity){
-                return ResponseEntity.status(400).body("Not enough stock in store for product: "+ orderLine.getProduct().getCode()+"/n"
-                        +"Stock in store: "+quantity+"/n"
-                        +"Request: "+orderLine.getQuantity());
+                inventoryRepo.increaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
             }
-            oldOrder.getOrderLines().add(orderLine);
-            inventoryRepo.decreaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
         }
-        orderRepo.save(oldOrder);
-        return ResponseEntity.ok().body(oldOrder);
+        oldOrderLines.clear();
+        orderRepo.updateOrder(oldOrder.getId(),newOrder.getPaid(), newOrder.getNote(),newOrder.isInstalment());
+        List<OrderLine> newOrderLines = new ArrayList<>();
+        newOrderLines.addAll(newOrder.getOrderLines());
+
+        if(newOrderLines.size()>0){
+            for(OrderLine orderLine: newOrderLines){
+                orderLine.setOrder(oldOrder);
+                oldOrder.getOrderLines().add(orderLine);
+                int quantity = inventoryRepo.findByCode(orderLine.getProduct().getCode()).getStock();
+                if(orderLine.getQuantity()> quantity){
+                    return ResponseEntity.status(400).body("Not enough stock in store for product: "+ orderLine.getProduct().getCode()+"/n"
+                            +"Stock in store: "+quantity+"/n"
+                            +"Request: "+orderLine.getQuantity());
+                }
+                orderRepo.updateOrderItem(oldOrder.getId(),orderLine.getProduct().getCode(),orderLine.getPrice(),orderLine.getQuantity(),orderLine.getDiscount(),orderLine.getTotalPrice());
+                inventoryRepo.decreaseQuantity(orderLine.getProduct().getCode(),orderLine.getQuantity());
+            }
+        }
+        return ResponseEntity.ok().body("Order Updated");
     }
     @GetMapping("/customer/{id}")
     public ResponseEntity getOrderByCustomer(@PathVariable Long id){
