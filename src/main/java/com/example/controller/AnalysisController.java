@@ -30,8 +30,10 @@ public class AnalysisController {
     }
 
     @GetMapping("/bestseller")
-    public ResponseEntity getBestseller(){
-        return ResponseEntity.ok().body(orderRepo.getBestSeller());
+    public ResponseEntity getBestseller(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+        return ResponseEntity.ok().body(orderRepo.getBestSeller(start,end));
     }
 
     @GetMapping("/unpaid")

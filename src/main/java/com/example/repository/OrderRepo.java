@@ -59,9 +59,9 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
             " customer c where o.customer = c.id and o.create_at between :startDate and :endDate group by c.name order by totalPaid DESC")
     List<TopCustomer> getTopCustomer(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    @Query(nativeQuery = true, value = "SELECT o.product_code AS productCode, SUM(o.quantity) AS totalSold FROM order_line o" +
-            " group by o.product_code order by totalSold DESC LIMIT 50" )
-    List<BestSeller> getBestSeller();
+    @Query(nativeQuery = true, value = "SELECT o.product_code AS productCode, SUM(o.quantity) AS totalSold FROM order_line o, order_ ord where" +
+            " o.order_id = ord.id and ord.create_at between :startDate and :endDate group by o.product_code order by totalSold DESC" )
+    List<BestSeller> getBestSeller(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
    // @Query(nativeQuery = true, value = "SELECT  * from order_ o where o.paid = 0")
     @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.paid = 0 and o.customer = c.id and o.staff = s.name")
