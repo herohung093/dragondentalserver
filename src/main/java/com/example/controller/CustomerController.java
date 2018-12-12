@@ -28,16 +28,18 @@ public class CustomerController {
         if(existing!= null){
             return ResponseEntity.status(409).body("Customer Already exist.");
         }
-        if(customer.getContactPerson().equals("") || customer.getContactPerson() == null){
-            customer.setContactPerson("N/A");
+        existing = new Customer(customer.getName(),customer.getPhone(),customer.getAddress()
+                ,customer.getContactPerson(),customer.getNote());
+        if( existing.getContactPerson() == null){
+            existing.setContactPerson("N/A");
         }
-        if(customer.getNote().equals("") || customer.getNote() == null){
-            customer.setNote("N/A");
+        if( existing.getNote() == null){
+            existing.setNote("N/A");
         }
-        if(customer.getPhone().equals("") || customer.getPhone() == null){
-            customer.setPhone("N/A");
+        if( existing.getPhone() == null){
+            existing.setPhone("N/A");
         }
-        customerRepo.save(customer);
+        customerRepo.save(existing);
         return ResponseEntity.ok().body("Customer has been added");
     }
 
