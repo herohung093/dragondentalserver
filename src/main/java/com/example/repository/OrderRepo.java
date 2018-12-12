@@ -101,5 +101,8 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     void updateOrderItem(@Param("order")long order,@Param("code")String code,@Param("price")float price,
                          @Param("quantity")int quantity, @Param("discount")int discount, @Param("totalPrice")float totalPrice, @Param("id")int id);
 
-
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update Order o set o.paid = :amount where o.id = :id")
+    void payForOrder(@Param("id")long id, @Param("amount")float amount);
 }

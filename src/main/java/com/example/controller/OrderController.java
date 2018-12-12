@@ -129,7 +129,12 @@ public class OrderController {
         orderRepo.deleteById(id);
         return ResponseEntity.ok().body("Order: "+id+" deleted");
     }
+    @PutMapping("/amount/")
+    public ResponseEntity payForOrder(@RequestParam("id")long id, @RequestParam("amount") float amount){
+        orderRepo.payForOrder(id, amount);
+        return ResponseEntity.ok().body("Has paid "+amount +"for order ID: "+id);
 
+    }
     @PutMapping("/")
     public ResponseEntity updateOrder(@RequestBody Order newOrder){
         Order oldOrder = orderRepo.getById(newOrder.getId());
