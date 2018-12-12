@@ -131,7 +131,8 @@ public class OrderController {
     }
     @PutMapping("/amount/")
     public ResponseEntity payForOrder(@RequestParam("id")long id, @RequestParam("amount") float amount){
-        orderRepo.payForOrder(id, amount);
+        Order order = orderRepo.getById(id);
+        orderRepo.payForOrder(id, order.getPaid() + amount);
         return ResponseEntity.ok().body("Has paid "+amount +" for order ID: "+id);
 
     }
