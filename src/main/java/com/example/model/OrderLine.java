@@ -135,7 +135,7 @@ public class OrderLine implements Serializable{
         if (!(o instanceof OrderLine)) return false;
         OrderLine orderLine = (OrderLine) o;
         return getQuantity() == orderLine.getQuantity() &&
-                Float.compare(orderLine.getOrder().getId(), getOrder().getId()) == 0 &&
+                Float.compare(orderLine.getId(), getId()) == 0 &&
                 (getProduct().getCode().equals(orderLine.getProduct().getCode()) ) ;
     }
 
