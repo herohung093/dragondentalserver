@@ -63,9 +63,11 @@ public class CustomerController {
     @PutMapping("/")
     public ResponseEntity updateCustomer(@RequestBody Customer customer){
         Customer exist = customerRepo.findByName(customer.getName());
+
         if(exist == null)
             return ResponseEntity.badRequest().body("Customer name does not exist");
-        customerRepo.updateCustomer(customer.getName(),customer.getAddress(),customer.getNote(),customer.getContactPerson(),customer.getPhone());
+        customerRepo.updateCustomer(customer.getId(),customer.getName(),customer.getPhone(),customer.getAddress()
+                ,customer.getContactPerson(),customer.getNote());
         return ResponseEntity.ok().body("Customer updated");
     }
    /* @GetMapping("/import")
