@@ -90,6 +90,8 @@ public interface OrderRepo  extends JpaRepository<Order, Long> {
     @Query(nativeQuery = true, value = "select o.id as id, c.name as customer, o.create_at as createAt, o.update_at as updateAt, o.paid as paid, o.note as note, o.is_instalment as isInstalment, s.name as staff from order_ o , customer c, staff s where o.customer = :id and o.customer = c.id and o.staff = s.name")
     List<ResponseOrder> getOrderByCustomer(@Param("id") Long id);
 
+    @Query(nativeQuery = true, value = "select ol.product_code as product, sum(ol.quantity) as quantity from order_line ol, order_ ord where ord.id = ol.order_id and ord.customer = :id and ord.create_at between :startDate and :endDate group by ol.product_code")
+    List<CustomerSold> getCustomerSold(@Param("id") Long id, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     @Transactional
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update Order o set o.paid = :paid, o.note = :note, o.isInstalment = :instalment where o.id = :id")

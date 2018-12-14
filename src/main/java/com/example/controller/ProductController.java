@@ -108,17 +108,6 @@ public class ProductController {
         }
         //add productInput into 2 tables
 
-        String name = productInput.getProduct().getName();
-        String[] output = name.split("-");
-        if(output.length == 3){
-            codeDetailController.checkNameExist(output[0]);
-            codeDetailController.checkSizeExist(output[1]);
-            codeDetailController.checkColorExist(output[2]);
-        }
-        if(output.length == 2){
-            codeDetailController.checkNameExist(output[0]);
-            codeDetailController.checkSizeExist(output[1]);
-        }
         Staff staff  = staffRepo.findByName(productInput.getOperator().getName());
         Product product = productInput.getProduct();
         if(product.getUnit().equals(""))

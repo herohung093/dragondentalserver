@@ -79,6 +79,12 @@ public class AnalysisController {
 
     }
 
+    @GetMapping("/customersold")
+    public ResponseEntity getCustomerSold(@RequestParam("id") long id,@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+        return ResponseEntity.ok().body(orderRepo.getCustomerSold(id, start,end));
+    }
     @GetMapping("/dept")
     public ResponseEntity getDepters(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
 
