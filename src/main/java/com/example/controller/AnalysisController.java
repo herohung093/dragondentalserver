@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 //@CrossOrigin(origins = "https://radiant-fjord-77052.herokuapp.com", maxAge = 3600)
@@ -56,6 +58,7 @@ public class AnalysisController {
     @GetMapping("/income/{year}")
     public ResponseEntity getIncomeOfMonths(@PathVariable("year") int year){
         LocalDate currentDate = LocalDate.now();
+        ArrayList<Float> data = new ArrayList<>();
         int currentYear = currentDate.getYear();
         int currentMonth = 12;
         if(year == currentYear)
@@ -73,9 +76,10 @@ public class AnalysisController {
             Float income = orderRepo.getIncomeByTime(startDate,endDate);
             if(income ==null)
                 income = Float.valueOf(0);
-            values.put(i,income);
+            //values.put(i,income);
+            data.add(income);
         }
-        return ResponseEntity.ok().body(values);
+        return ResponseEntity.ok().body(data);
 
     }
 
