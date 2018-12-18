@@ -79,7 +79,7 @@ public class ProductInputController {
         Staff staff = staffRepo.findByName(productInput.getOperator().getName());
 
         inventoryRepo.decreaseQuantity(productInput.getProduct().getCode(),productInput.getQuantity());
-        productInput.setDescription(productInput.getDescription() + ". Increase stock");
+        productInput.setDescription(productInput.getDescription() + ". Decrease stock");
         productInput.setOperator(staff);
         productInput.setProduct(existing);
         productInputRepo.save(productInput);
