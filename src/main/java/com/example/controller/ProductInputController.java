@@ -71,7 +71,7 @@ public class ProductInputController {
         productInput.setProduct(existing);
         productInputRepo.save(productInput);
 
-        return ResponseEntity.ok().body("Stock has been increased. \n Total Stock: "+ productInput.getQuantity());
+        return ResponseEntity.ok().body(productInput.getProduct().getCode()+" has been increased. \n Total Stock: "+ productInput.getQuantity());
     }
     @PutMapping("/decrease")
     public ResponseEntity increaseProductStock(@RequestBody ProductInput productInput){
@@ -84,7 +84,7 @@ public class ProductInputController {
         productInput.setProduct(existing);
         productInputRepo.save(productInput);
 
-        return ResponseEntity.ok().body("Stock has been decrease. \n Total Stock: "+ productInput.getQuantity());
+        return ResponseEntity.ok().body(productInput.getProduct().getCode()+" has been decrease. \n Total Stock: "+ productInput.getQuantity());
     }
     @GetMapping("/color/{color}")
     public ResponseEntity getAllByColor(@PathVariable("color") String color){
