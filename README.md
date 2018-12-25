@@ -1,6 +1,6 @@
 # Dragon Dental Server
 Dragon Dental Server
-A Spring boot project using hibernate for Dragon Dental LTD
+A Spring boot project using hibernate, postgreSQL for Dragon Dental LTD
 Main features:
 + manage stock.
 + manage staff and their commision.
