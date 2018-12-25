@@ -1,5 +1,5 @@
-# dragondentalserver
-Dragon Dental Sever
+# Dragon Dental Server
+Dragon Dental Server
 A Spring boot project using hibernate for Dragon Dental LTD
 Main features:
 + manage stock.
